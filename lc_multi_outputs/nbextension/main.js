@@ -103,7 +103,7 @@ define([
             $('<li/>')
                 .attr('id', 'tab-output-current')
                 .append(
-                    $('<a/>').attr( { href: '#output-current'}).text('*')))
+                    $('<a/>').attr({ href: '#output-current' }).html('<i class="fa fa-fw fa-star" title="latest"/>')))
 
         var tab_output_wrapper = $('<div/>')
             .addClass('multi-output-wrapper')
@@ -124,6 +124,17 @@ define([
     }
 
     function add_tab_outputarea(cell, pinned_output_data) {
+
+        var pinned_output_data_output_head = pinned_output_data.outputs[0]
+        if (pinned_output_data_output_head.metadata == null || pinned_output_data_output_head.metadata.ExecuteTime == null) {
+            pinned_output_data_output_head.metadata = Object.assign(
+                pinned_output_data_output_head.metadata || {},
+                cell.metadata.ExecuteTime == null ? {} : {
+                    ExecuteTime: cell.metadata.ExecuteTime,
+                },
+            )
+        }
+
         var pinned_output_element = $('<div></div>')
         var pinned_outputarea = new outputarea.OutputArea({
             config: cell.config,
@@ -165,10 +176,34 @@ define([
         return tab;
     }
 
-        var title = 'Out [' + pinned_output.execution_count + ']';
+    function ago(dtMilliseconds) {
+        var dtSeconds = dtMilliseconds / 1000
+        if (dtSeconds < 60) {
+            return 'within a minute ago'
+        } else if (dtSeconds < 3600) {
+            return `${(dtSeconds / 60).toFixed(2)} minutes`
+        } else if (dtSeconds < 86400) {
+            return `${(dtSeconds / 3600).toFixed(2)} hours`
+        } else if (dtSeconds < 86400 * 30) {
+            return `${(dtSeconds / 86400).toFixed(1)} days`
+        } else if (dtSeconds < 86400 * 365.25) {
+            return `${(dtSeconds / 86400 / 30).toFixed(0)} months`
+        } else {
+            return `${(dtSeconds / 86400 / 365.25).toFixed(1)} years`
+        }
+    }
+
     function create_tab(cell, pinned_output, id) {
+        var maybeExecuteTime = pinned_output.outputarea.outputs[0].metadata.ExecuteTime
+        var title = maybeExecuteTime == null ? (
+            `Out [${pinned_output.execution_count}]`
+        ) : `[${pinned_output.execution_count}] ${maybeExecuteTime.end_time.substring(0, 10)}`;
         var tab = $('<li/>')
             .attr('id', 'tab-' + id)
+            .attr('title',
+                maybeExecuteTime == null
+                    ? title
+                    : `${maybeExecuteTime.end_time} (${ago(new Date() - new Date(maybeExecuteTime.end_time))} ago)`)
             .append($('<button/>')
                 .button({
                     icons: { primary: 'ui-icon-circle-close' },
@@ -198,7 +233,7 @@ define([
             .appendTo(container);
 
         var clickable = btn.find('button');
-        $('<i class="fa fa-fw fa-thumb-tack"/>').appendTo(clickable);
+        $('<i class="fa fa-fw fa-thumb-tack" title="pin this output"/>').appendTo(clickable);
         clickable.on('click', function (event) {
             pin_output(cell);
             return false;
@@ -217,7 +252,7 @@ define([
             .appendTo(container);
 
         var clickable = btn.find('button');
-        $('<i class="fa fa-fw fa-exchange"/>').appendTo(clickable);
+        $('<i class="fa fa-fw fa-exchange" title="compare against latest output"/>').appendTo(clickable);
         clickable.on('click', function (event) {
             show_diff_dialog(cell, pinned_output);
             return false;
@@ -585,6 +620,8 @@ define([
         codecell.CodeCell.prototype._handle_execute_reply = function (msg) {
             changeColor(false, this, msg);
             previous_handle_execute_reply.apply(this, arguments);
+            // auto-pin after every execute
+            pin_output(this)
         };
     }
 
