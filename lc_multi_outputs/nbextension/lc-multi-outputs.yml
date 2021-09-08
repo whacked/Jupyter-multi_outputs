@@ -1,5 +1,5 @@
 Type: Jupyter Notebook Extension
-Name: LC multi outputs
+Name: LC multi outputs (modified)
 Section: notebook
 Description: "Multi outputs extension for Literate Computing"
 Link: README.md
