@@ -21,7 +21,7 @@ define([
     'codemirror/addon/search/searchcursor',
     'codemirror/addon/scroll/annotatescrollbar',
     'codemirror/addon/search/matchesonscrollbar'
-], function(Jupyter, $, require, events, jsdialog, configmod, utils, codecell, outputarea, codemirror,
+], function (Jupyter, $, require, events, jsdialog, configmod, utils, codecell, outputarea, codemirror,
     merge, searchcursor, annotatescrollbar, matchesonscrollbar) {
     "use strict";
 
@@ -33,7 +33,7 @@ define([
         max_num_of_pinned_outputs: 5
     };
 
-    function changeColor(first, cell, msg){
+    function changeColor(first, cell, msg) {
         var outback = cell.output_area.wrapper.find('.out_prompt_bg');
         var inback = $(cell.input[0].firstChild);
 
@@ -41,7 +41,7 @@ define([
         cell.element.removeClass('cell-status-error');
         cell.element.removeClass('cell-status-inqueue');
 
-        if(first == true) {
+        if (first == true) {
             cell.element.addClass('cell-status-inqueue');
         } else {
             if (msg.content.status != "ok" && msg.content.status != "aborted") {
@@ -55,7 +55,7 @@ define([
     function init_events() {
         events.on('create.Cell', function (e, data) {
             if (data.cell instanceof codecell.CodeCell) {
-                setTimeout(function() {
+                setTimeout(function () {
                     extend_cell(data.cell);
                 }, 0);
             }
@@ -64,16 +64,16 @@ define([
 
     function extend_cell(cell) {
         var pinned_outputs = cell.metadata.pinned_outputs;
-        if(pinned_outputs === undefined) {
+        if (pinned_outputs === undefined) {
             pinned_outputs = [];
         }
-        if(cell.pinned_outputs === undefined) {
+        if (cell.pinned_outputs === undefined) {
             cell.pinned_outputs = [];
         }
 
-        if(pinned_outputs.length > 0) {
+        if (pinned_outputs.length > 0) {
             create_multi_output_tabs(cell)
-            for(var i=0; i<pinned_outputs.length; ++i) {
+            for (var i = 0; i < pinned_outputs.length; ++i) {
                 add_tab_outputarea(cell, pinned_outputs[i]);
             }
         }
@@ -83,15 +83,14 @@ define([
         update_pin_button_status(cell.output_area);
     }
 
-    function create_multi_output_tabs(cell)
-    {
+    function create_multi_output_tabs(cell) {
         var container = $('<div/>')
             .addClass('multi-output-container');
         var tabbar = $('<div/>')
             .addClass('multi-output-tabs')
             .addClass('output_area')
             .append($('<div/>')
-                    .addClass('out_prompt_bg').addClass('prompt'))
+                .addClass('out_prompt_bg').addClass('prompt'))
             .appendTo(container);
         var tabs = $('<ul/>')
             .addClass('nav')
@@ -116,8 +115,7 @@ define([
         container.tabs();
     }
 
-    function remove_multi_output_tabs(cell)
-    {
+    function remove_multi_output_tabs(cell) {
         var container = cell.element.find('.multi-output-container');
 
         container.tabs("destroy");
@@ -125,8 +123,7 @@ define([
         container.remove();
     }
 
-    function add_tab_outputarea(cell, pinned_output_data)
-    {
+    function add_tab_outputarea(cell, pinned_output_data) {
         var pinned_output_element = $('<div></div>')
         var pinned_outputarea = new outputarea.OutputArea({
             config: cell.config,
@@ -161,47 +158,44 @@ define([
         var tab = create_tab(cell, pinned_output, tab_id);
         tab.insertAfter(cell.element.find('div.multi-output-tabs ul.nav-tabs li#tab-output-current'));
 
-        setTimeout(function() {
+        setTimeout(function () {
             tab_container.tabs('refresh');
         }, 0);
 
         return tab;
     }
 
-    function create_tab(cell, pinned_output, id)
-    {
         var title = 'Out [' + pinned_output.execution_count + ']';
+    function create_tab(cell, pinned_output, id) {
         var tab = $('<li/>')
             .attr('id', 'tab-' + id)
             .append($('<button/>')
-                    .button({
-                        icons: { primary: 'ui-icon-circle-close' },
-                        text: null
-                    })
-                    .on('click', function() {
-                        remove_pinned_output(cell, pinned_output.outputarea);
-                    })).append($('<a/>').attr( { href: '#' + id }).text(title))
+                .button({
+                    icons: { primary: 'ui-icon-circle-close' },
+                    text: null
+                })
+                .on('click', function () {
+                    remove_pinned_output(cell, pinned_output.outputarea);
+                })).append($('<a/>').attr({ href: '#' + id }).text(title))
         return tab;
     }
 
-    function extend_prompt(cell, output_area)
-    {
+    function extend_prompt(cell, output_area) {
         $('<div/>')
             .addClass('out_prompt_bg')
             .addClass('prompt')
             .appendTo(output_area.wrapper);
     }
 
-    function create_pin_button(cell, output_area)
-    {
+    function create_pin_button(cell, output_area) {
         var container = $('<div/>')
-                    .addClass('multi-outputs-ui')
-                    .appendTo(output_area.wrapper.find('.out_prompt_overlay'));
+            .addClass('multi-outputs-ui')
+            .appendTo(output_area.wrapper.find('.out_prompt_overlay'));
 
         var btn = $('<div/>')
-                    .addClass('buttons')
-                    .append('<button class="btn btn-default"/>')
-                    .appendTo(container);
+            .addClass('buttons')
+            .append('<button class="btn btn-default"/>')
+            .appendTo(container);
 
         var clickable = btn.find('button');
         $('<i class="fa fa-fw fa-thumb-tack"/>').appendTo(clickable);
@@ -214,13 +208,13 @@ define([
     function create_diff_button(cell, pinned_output) {
         var output_area = pinned_output.outputarea;
         var container = $('<div/>')
-                    .addClass('multi-outputs-diff-ui')
-                    .appendTo(output_area.wrapper.find('.out_prompt_overlay'));
+            .addClass('multi-outputs-diff-ui')
+            .appendTo(output_area.wrapper.find('.out_prompt_overlay'));
 
         var btn = $('<div/>')
-                    .addClass('buttons')
-                    .append('<button class="btn btn-default"/>')
-                    .appendTo(container);
+            .addClass('buttons')
+            .append('<button class="btn btn-default"/>')
+            .appendTo(container);
 
         var clickable = btn.find('button');
         $('<i class="fa fa-fw fa-exchange"/>').appendTo(clickable);
@@ -231,7 +225,7 @@ define([
     }
 
     function update_pin_button_status(output_area) {
-        if(output_area.outputs.length == 0) {
+        if (output_area.outputs.length == 0) {
             output_area.wrapper.find('.multi-outputs-ui').css('display', 'none');
         } else {
             output_area.wrapper.find('.multi-outputs-ui').css('display', '');
@@ -239,31 +233,31 @@ define([
     }
 
     function pin_output(cell) {
-        if(cell.output_area.outputs.length == 0) {
+        if (cell.output_area.outputs.length == 0) {
             return;
         }
 
-        if(cell.input_prompt_number === '*') {
+        if (cell.input_prompt_number === '*') {
             return;
         }
 
-        if(cell.metadata.pinned_outputs === undefined) {
+        if (cell.metadata.pinned_outputs === undefined) {
             cell.metadata.pinned_outputs = [];
         }
 
         var outputs_json = cell.output_area.toJSON();
         var pinned_output = {
             'execution_count': cell.input_prompt_number,
-            'outputs' : outputs_json
+            'outputs': outputs_json
         }
         cell.metadata.pinned_outputs.push(pinned_output);
 
-        if(cell.pinned_outputs.length == 0) {
+        if (cell.pinned_outputs.length == 0) {
             create_multi_output_tabs(cell);
         }
         var tab = add_tab_outputarea(cell, pinned_output);
         var tab_container = cell.element.find('div.multi-output-container');
-        setTimeout(function() {
+        setTimeout(function () {
             tab_container.tabs("option", "active", 1);
         }, 0);
 
@@ -271,7 +265,7 @@ define([
 
         update_pin_button_status(cell.output_area);
 
-        cell.events.trigger('set_dirty.Notebook', {value: true});
+        cell.events.trigger('set_dirty.Notebook', { value: true });
     }
 
     function remove_old_pinned_outputs(cell, rest_num) {
@@ -282,7 +276,7 @@ define([
         }
 
         var max = Math.max(rest_num, 1);
-        while(pinned_output_areas.length > max) {
+        while (pinned_output_areas.length > max) {
             remove_pinned_output(cell, pinned_output_areas[0])
         }
     }
@@ -297,14 +291,14 @@ define([
 
         var tab_id = pinned_output_area.tab_id;
         cell.element.find('ul > li#tab-' + tab_id).remove();
-        cell.element.find('div#' + tab_id ).remove();
+        cell.element.find('div#' + tab_id).remove();
         cell.element.find('div.multi-output-container').tabs('refresh');
 
-        if(cell.pinned_outputs.length == 0) {
+        if (cell.pinned_outputs.length == 0) {
             remove_multi_output_tabs(cell);
         }
 
-        cell.events.trigger('set_dirty.Notebook', {value: true});
+        cell.events.trigger('set_dirty.Notebook', { value: true });
     }
 
     function get_cell_level(cell) {
@@ -312,7 +306,7 @@ define([
         if (cell === undefined) {
             return level;
         }
-        if ((typeof(cell) === 'object')  && (cell.cell_type === 'markdown')) {
+        if ((typeof (cell) === 'object') && (cell.cell_type === 'markdown')) {
             level = cell.get_text().match(/^#*/)[0].length || level;
         }
         return Math.min(level, 7);
@@ -322,19 +316,18 @@ define([
         return get_cell_level(cell) < 7;
     }
 
-    function get_section_cells(heading_cell)
-    {
+    function get_section_cells(heading_cell) {
         var top_level = get_cell_level(heading_cell);
         var cells = Jupyter.notebook.get_cells();
 
         var index = Jupyter.notebook.find_cell_index(heading_cell);
         var section_cells = new Array();
-        for (var i=index+1; i<cells.length; ++i) {
+        for (var i = index + 1; i < cells.length; ++i) {
             var cell = cells[i];
             var level = get_cell_level(cell);
             if (level > top_level) {
                 section_cells.push(cell);
-            } else if(level <= top_level) {
+            } else if (level <= top_level) {
                 break;
             }
         }
@@ -351,7 +344,7 @@ define([
         if (index == 0) {
             return null;
         }
-        for (var i=index-1; i>=0; --i) {
+        for (var i = index - 1; i >= 0; --i) {
             if (is_heading(cells[i])) {
                 return cells[i];
             }
@@ -359,8 +352,7 @@ define([
         return null;
     }
 
-    function get_bellow_all_cells()
-    {
+    function get_bellow_all_cells() {
         var index = Jupyter.notebook.get_selected_index();
         var cells = [].concat(Jupyter.notebook.get_cells());
         cells.splice(0, index);
@@ -379,7 +371,7 @@ define([
         } else {
             section = [];
             var level = ch.get_cell_level(cells[index]);
-            for (var i=index; i<cells.length; ++i) {
+            for (var i = index; i < cells.length; ++i) {
                 if (ch.get_cell_level(cells[i]) !== level) {
                     break;
                 }
@@ -389,7 +381,7 @@ define([
 
         var section_cells = new Array();
         var index_in_section = $.inArray(cells[index], section);
-        for (var i=index_in_section; i<section.length; ++i) {
+        for (var i = index_in_section; i < section.length; ++i) {
             section_cells.push(section[i]);
         }
 
@@ -445,7 +437,7 @@ define([
     function get_output_text(output_area) {
         var outputs = output_area.outputs;
         var texts = new Array();
-        for(var i=0; i < outputs.length; ++i) {
+        for (var i = 0; i < outputs.length; ++i) {
             if (outputs[i].data && outputs[i].data['text/plain']) {
                 texts.push(outputs[i].data['text/plain']);
             } else if (outputs[i].output_type == 'stream') {
@@ -457,20 +449,19 @@ define([
         return texts.join('\n');
     }
 
-    function mark_text(editor, query, searchCursor)
-    {
+    function mark_text(editor, query, searchCursor) {
         var searchCursor = editor.getSearchCursor(query, 0, false);
 
         var marks = editor.getAllMarks();
-        for (var i=0; i<marks.length; ++i) {
+        for (var i = 0; i < marks.length; ++i) {
             marks[i].clear();
         }
-        if(editor.scrollBarAnnotation) {
+        if (editor.scrollBarAnnotation) {
             editor.scrollBarAnnotation.clear();
         }
 
-        var options = {className: 'search-highlight'};
-        while(searchCursor.findNext()) {
+        var options = { className: 'search-highlight' };
+        while (searchCursor.findNext()) {
             editor.markText(
                 searchCursor.from(), searchCursor.to(),
                 options);
@@ -481,7 +472,7 @@ define([
     function show_diff_dialog(cell, pinned_output) {
         var value = get_output_text(cell.output_area);
         var orig = get_output_text(pinned_output.outputarea);
-        if(value === "" && orig === "") {
+        if (value === "" && orig === "") {
             return;
         }
 
@@ -493,11 +484,11 @@ define([
         var searchbar = $('<div/>').addClass('multi-outputs-search-bar');
         $('<span/>').addClass('label').text('Search').appendTo(searchbar);
         var input = $('<input/>').attr('type', 'text').appendTo(searchbar);
-        input.keydown(function(event, ui) {
+        input.keydown(function (event, ui) {
             event.stopPropagation();
             return true;
         });
-        input.change(function(event, ui) {
+        input.change(function (event, ui) {
             var text = input.val();
             mark_text(dv.edit, text);
             mark_text(dv.right.orig, text);
@@ -518,7 +509,7 @@ define([
         }
 
         content.dialog({
-            open: function(event, ui) {
+            open: function (event, ui) {
                 dv = codemirror.MergeView(content.get(0), {
                     value: value,
                     orig: orig,
@@ -531,7 +522,7 @@ define([
                 searchbar.appendTo(content);
                 dialogResized();
             },
-            close: function(event, ui) {
+            close: function (event, ui) {
                 content.dialog("destroy");
             },
             resize: dialogResized,
@@ -553,7 +544,7 @@ define([
         document.getElementsByTagName("head")[0].appendChild(link);
     };
 
-    var load_extension = function() {
+    var load_extension = function () {
         load_css('./main.css');
         load_css('codemirror/addon/merge/merge.css');
         load_css('codemirror/addon/search/matchesonscrollbar.css');
@@ -562,16 +553,16 @@ define([
     function patch_CodeCell_get_callbacks() {
         console.log('[multi_outputs] patching CodeCell.prototype.get_callbacks');
         var previous_get_callbacks = codecell.CodeCell.prototype.get_callbacks;
-        codecell.CodeCell.prototype.get_callbacks = function() {
+        codecell.CodeCell.prototype.get_callbacks = function () {
             var that = this;
             var callbacks = previous_get_callbacks.apply(this, arguments);
             var prev_iopub_output_callback = callbacks.iopub.output;
-            callbacks.iopub.output = function(msg) {
+            callbacks.iopub.output = function (msg) {
                 prev_iopub_output_callback(msg);
                 update_pin_button_status(that.output_area);
             }
             var prev_iopub_clear_output_callback = callbacks.iopub.clear_output;
-            callbacks.iopub.clear_output = function(msg) {
+            callbacks.iopub.clear_output = function (msg) {
                 prev_iopub_clear_output_callback(msg);
                 update_pin_button_status(that.output_area);
             }
@@ -582,7 +573,7 @@ define([
     function patch_CodeCell_clear_output() {
         console.log('[multi_outputs] patching CodeCell.prototype.clear_output');
         var previous_clear_output = codecell.CodeCell.prototype.clear_output;
-        codecell.CodeCell.prototype.clear_output = function(wait) {
+        codecell.CodeCell.prototype.clear_output = function (wait) {
             previous_clear_output.apply(this, arguments);
             update_pin_button_status(this.output_area);
         }
@@ -601,37 +592,37 @@ define([
         var buttons = [];
 
         buttons.push(Jupyter.keyboard_manager.actions.register({
-            help : 'pin selected cells\' output',
-            icon : 'fa-pin-output',
-            handler : pin_output_selected,
+            help: 'pin selected cells\' output',
+            icon: 'fa-pin-output',
+            handler: pin_output_selected,
         }, 'pin_output', mod_name));
         Jupyter.keyboard_manager.actions.register({
-            help : 'pin outputs below in section',
-            handler : pin_output_below_in_section,
+            help: 'pin outputs below in section',
+            handler: pin_output_below_in_section,
         }, 'pin_output_below_in_section', mod_name);
         Jupyter.keyboard_manager.actions.register({
-            help : 'pin outputs below all',
-            handler : pin_output_below_all,
+            help: 'pin outputs below all',
+            handler: pin_output_below_all,
         }, 'pin_output_below_all', mod_name);
 
         buttons.push(Jupyter.keyboard_manager.actions.register({
-            help : 'remove pinned outputs of selected cells leaving the leftmost one',
-            icon : 'fa-pin-remove-leaving-one',
-            handler : remove_pinned_outputs_leaving_one_selected,
+            help: 'remove pinned outputs of selected cells leaving the leftmost one',
+            icon: 'fa-pin-remove-leaving-one',
+            handler: remove_pinned_outputs_leaving_one_selected,
         }, 'pin_remove_leaving_one', mod_name));
         Jupyter.keyboard_manager.actions.register({
-            help : 'remove pinned outputs leaving the leftmost one (cells below in the section)',
-            handler : remove_pinned_outputs_leaving_one_below_in_section,
+            help: 'remove pinned outputs leaving the leftmost one (cells below in the section)',
+            handler: remove_pinned_outputs_leaving_one_below_in_section,
         }, 'pin_remove_leaving_one_below_in_section', mod_name);
         Jupyter.keyboard_manager.actions.register({
-            help : 'remove pinned outputs leaving the leftmost one (cells below all)',
-            handler : remove_pinned_outputs_leaving_one_below_all,
+            help: 'remove pinned outputs leaving the leftmost one (cells below all)',
+            handler: remove_pinned_outputs_leaving_one_below_all,
         }, 'pin_remove_leaving_one_below_all', mod_name);
 
         Jupyter.toolbar.add_buttons_group(buttons);
     }
 
-    var multi_outputs = function() {
+    var multi_outputs = function () {
         load_extension();
         register_toolbar_buttons();
         patch_CodeCell_get_callbacks();
@@ -668,7 +659,7 @@ define([
                 return;
             }
 
-            var output_json = this.output_area.outputs[this.output_area.outputs.length-1];
+            var output_json = this.output_area.outputs[this.output_area.outputs.length - 1];
             this.set_input_prompt('*');
             this.element.addClass("running");
 
@@ -678,12 +669,12 @@ define([
 
             var callbacks = this.get_callbacks();
 
-            var options = {silent: false, store_history: true, stop_on_error : stop_on_error};
+            var options = { silent: false, store_history: true, stop_on_error: stop_on_error };
             var data = {
-                "lc_cell_data" : {
-                    "lc_cell_meme" : this.metadata.lc_cell_meme
+                "lc_cell_data": {
+                    "lc_cell_meme": this.metadata.lc_cell_meme
                 },
-                "lc_notebook_data" : {
+                "lc_notebook_data": {
                     "lc_notebook_meme": this.notebook.metadata.lc_notebook_meme,
                     "notebook_path": this.notebook.notebook_path
                 }
@@ -693,14 +684,14 @@ define([
             this.last_msg_id = this.kernel.execute(this.get_text(), callbacks, options);
             codecell.CodeCell.msg_cells[this.last_msg_id] = this;
             this.render();
-            this.events.trigger('execute.CodeCell', {cell: this});
+            this.events.trigger('execute.CodeCell', { cell: this });
         };
 
         /**
         * execute this extension on load
         */
-        var on_notebook_loaded = function() {
-            Jupyter.notebook.get_cells().forEach( function(cell, index, array) {
+        var on_notebook_loaded = function () {
+            Jupyter.notebook.get_cells().forEach(function (cell, index, array) {
                 if (cell instanceof codecell.CodeCell) {
                     extend_cell(cell);
                 }
@@ -708,22 +699,22 @@ define([
             init_events();
         };
 
-        Jupyter.notebook.config.loaded.then(function on_config_loaded () {
+        Jupyter.notebook.config.loaded.then(function on_config_loaded() {
             $.extend(true, options, Jupyter.notebook.config.data[mod_name]);
-        }, function on_config_load_error (reason) {
+        }, function on_config_load_error(reason) {
             console.warn(log_prefix, 'Using defaults after error loading config:', reason);
-        }).then(function do_stuff_with_config () {
+        }).then(function do_stuff_with_config() {
             events.on("notebook_loaded.Notebook", on_notebook_loaded);
             if (Jupyter.notebook !== undefined && Jupyter.notebook._fully_loaded) {
                 on_notebook_loaded();
             }
-        }).catch(function on_error (reason) {
+        }).catch(function on_error(reason) {
             console.error(log_prefix, 'Error:', reason);
         });
     };
 
     return {
-        load_ipython_extension : multi_outputs,
-        load_jupyter_extension : multi_outputs
+        load_ipython_extension: multi_outputs,
+        load_jupyter_extension: multi_outputs
     };
 });
